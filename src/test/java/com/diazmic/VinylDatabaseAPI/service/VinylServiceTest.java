@@ -168,16 +168,60 @@ public class VinylServiceTest {
     public void Test_5_1_editVinyl_InputWithValidCatalogNumberAndVinyl_ReturnVinyl() throws Exception {
         vinylDatabase = List.of(mockVinyl1,mockVinyl2,mockVinyl3);
         String initCatalogNumber = mockVinyl1.getCatalogNumber();
-        Vinyl mockUpdatedVinyl = Mockito.mock(Vinyl.class);
-        Mockito.when(mockUpdatedVinyl.getCatalogNumber()).thenReturn(mockVinyl1.getCatalogNumber());
-        assertEquals(vinylService.editVinyl(initCatalogNumber,mockUpdatedVinyl),mockVinyl1);
+        assertEquals(mockVinyl1.getCatalogNumber(), vinylService.editVinyl(initCatalogNumber,mockVinyl1).getCatalogNumber());
     }
 
     @Test
-    public void Test_5_2_editVinyl_InputWithInValidCatalogNumberAndVinyl_ReturnVinyl(){
-
+    public void Test_5_2_editVinyl_InputWithInValidCatalogNumberAndVinyl_Throws_Exception() {
+        setUpDaoRead();
+        vinylDatabase = List.of(mockVinyl1,mockVinyl2,mockVinyl3);
+        String initCatalogNumber = "testFakeCatalogNumberNotInDB";
+        Exception actualException = assertThrows(Exception.class
+                ,()->vinylService.editVinyl(initCatalogNumber,mockVinyl3));
+        String expectedMsg = "Vinyl doesn't exists. Can not edit non-existent Vinyl.";
+        assertEquals(expectedMsg,actualException.getMessage());
     }
 
+    @Test
+    public void Test_5_3_editVinyl_NotAbleToUpdate_Throws_Exception() {
+        vinylDatabase = List.of(mockVinyl1,mockVinyl2,mockVinyl3);
+        Vinyl mockTestVinyl = Mockito.mock(Vinyl.class);
+        Mockito.when(mockTestVinyl.getCatalogNumber()).thenReturn("testCatalogNumber1");
+        Mockito.when(mockTestVinyl.getTitle()).thenReturn("");
+        String initCatalogNumber = mockVinyl1.getCatalogNumber();
+        Exception actualException = assertThrows(Exception.class
+                ,()->vinylService.editVinyl(initCatalogNumber,mockTestVinyl));
+        String expectedMsg = "Vinyl can not be edited.";
+        assertEquals(expectedMsg,actualException.getMessage());
+    }
+
+    @Test
+    public void Test_6_1_deleteVinyl_AbleToDelete_ReturnDeletedVinyl() throws Exception {
+        vinylDatabase.addAll(Arrays.asList(mockVinyl1,mockVinyl2,mockVinyl3));
+        String inputCatalogNumber= mockVinyl1.getCatalogNumber();
+        Vinyl actualVinyl = vinylService.deleteVinyl(inputCatalogNumber);
+        Vinyl expectedVinyl = mockVinyl1;
+        assertEquals(expectedVinyl.getCatalogNumber(),actualVinyl.getCatalogNumber());
+        assertFalse(vinylDatabase.contains(actualVinyl));
+    }
+
+    @Test
+    public void Test_6_2_deleteVinyl_NotAbleToDelete_InvalidCatalogNumber_ReturnDeletedVinyl() throws Exception{
+        vinylDatabase.addAll(Arrays.asList(mockVinyl1,mockVinyl2,mockVinyl3));
+        Exception outputException = assertThrows(Exception.class,
+                () -> vinylService.deleteVinyl(""));
+        String expectedMsg = "Can not remove non existent vinyl";
+        assertEquals(expectedMsg,outputException.getMessage());
+    }
+
+    @Test
+    public void Test_6_3_deleteVinyl_NotAbleToDelete_VinylNotInDatabase_ReturnDeletedVinyl() throws Exception{
+        vinylDatabase.addAll(Arrays.asList(mockVinyl1,mockVinyl2,mockVinyl3));
+        Exception outputException = assertThrows(Exception.class,
+                () -> vinylService.deleteVinyl("testCatalogNumber4"));
+        String expectedMsg = "Can not remove non existent vinyl";
+        assertEquals(expectedMsg,outputException.getMessage());
+    }
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[(0.1),(setUp())]
 
     private void setUpDaoCreate() {
@@ -194,10 +238,10 @@ public class VinylServiceTest {
         Mockito.when(mockVinylDao.read(Mockito.anyString()))
                 .thenAnswer(invocation -> {
                     for (Vinyl vinyl : vinylDatabase) {
-                        if (vinyl.getCatalogNumber().equals(invocation.getArgument(1)))
-                            return vinyl;
+                        if (vinyl.getCatalogNumber().equals(invocation.getArgument(0)))
+                            return Optional.of(vinyl);
                     }
-                    return null;
+                    return Optional.empty();
                 });
 
     }
@@ -209,7 +253,7 @@ public class VinylServiceTest {
                     Vinyl updatedVinyl = invocation.getArgument(0);
                     String targetId = invocation.getArgument(1);
                     for (Vinyl vinyl : vinylDatabase) {
-                        if(vinyl.getCatalogNumber().equals(targetId)){
+                        if(vinyl.getCatalogNumber().equals(targetId) && !updatedVinyl.getTitle().isEmpty()){
                             return true;
                         }
                     }
@@ -222,16 +266,11 @@ public class VinylServiceTest {
         // Delete Method
         Mockito.when(mockVinylDao.delete(Mockito.anyString()))
                 .thenAnswer(invocation -> {
-                    for (Vinyl vinyl: vinylDatabase) {
-                        if(vinyl.getCatalogNumber().equals(invocation.getArgument(0))) {
-                            vinylDatabase.remove(vinyl);
-                            return true;
-                        }
-                    }
-                    return false;
+                    String inputString = invocation.getArgument(0);
+                    Vinyl targetVinyl = mockVinylDao.read(inputString).get();
+                    return vinylDatabase.remove(targetVinyl);
                 });
     }
-
 
     private void setUpVinylNameQueue(){
         Mockito.when(mockVinylDao.vinylNameQueue(Mockito.anyString())).thenAnswer((invocation)->{
