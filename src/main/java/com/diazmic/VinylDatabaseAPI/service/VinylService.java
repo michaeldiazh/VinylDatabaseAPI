@@ -81,14 +81,10 @@ public class VinylService {
      * Get vinyl from database from catalog number.
      * @param catalogNumber Target catalog number for vinyl
      * @return the target {@code Vinyl}
-     * @throws Exception if the vinyl doesnt exist in database.
+     * @throws Exception if the vinyl doesn't exist in database.
      */
     public Vinyl getVinyl(String catalogNumber) throws Exception {
-        for(Vinyl vinyl : vinylDao.readAll()){
-            if(vinyl.getCatalogNumber().equals(catalogNumber))
-                return vinyl;
-        }
-        throw new Exception("Vinyl does not exist in Database");
+        return vinylDao.read(catalogNumber).orElseThrow(Exception::new);
     }
 
     /**

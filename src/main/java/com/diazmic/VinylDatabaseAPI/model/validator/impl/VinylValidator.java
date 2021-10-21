@@ -2,6 +2,8 @@ package com.diazmic.VinylDatabaseAPI.model.validator.impl;
 
 import com.diazmic.VinylDatabaseAPI.model.Vinyl;
 import com.diazmic.VinylDatabaseAPI.model.validator.Validator;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Service;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -11,6 +13,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
+@Service
+@ComponentScan
 public class VinylValidator implements Validator<Vinyl> {
     private static final String CATALOG_NUMBER = "catalogNumber";
     private static final String TITLE = "title";
@@ -19,7 +23,6 @@ public class VinylValidator implements Validator<Vinyl> {
     private static final String SIZE = "size";
     private static final String TRACKS = "tracks";
     private static final String VINYL_INVENTORY = "vinylInventory";
-    private static VinylValidator vinylValidator = new VinylValidator();
 
     public boolean validate(Vinyl targetModel) throws IllegalAccessException, InvocationTargetException {
         List<String> nonNull = List.of(CATALOG_NUMBER,TITLE,ARTIST,TYPE
@@ -39,8 +42,6 @@ public class VinylValidator implements Validator<Vinyl> {
         return true;
     }
 
-    public static VinylValidator getVinylValidator(){
-        return vinylValidator;
-    }
+
 
 }

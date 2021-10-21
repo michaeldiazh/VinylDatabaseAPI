@@ -18,13 +18,16 @@ import java.util.ArrayList;
 public class VinylValidatorTest {
     private final Vinyl testVinyl = VinylFactory.makeVinyl("test","test",new Artist(), Vinyl.Type.EP, Vinyl.Size.SEVEN_INCH, Vinyl.RPM.SEVENTY_EIGHT,new ArrayList<>(),VinylInventory.builder().build());
 
+    @Autowired
+    private VinylValidator vinylValidator = new VinylValidator();
+
     @Test
     public void Test_1_1_validate_works() throws IllegalAccessException, InvocationTargetException {
-        Assertions.assertTrue(VinylValidator.getVinylValidator().validate(testVinyl));
+        Assertions.assertTrue(vinylValidator.validate(testVinyl));
     }
     @Test
     public void Test_1_2_validate_works_for_catching_null() throws IllegalAccessException, InvocationTargetException {
         Vinyl mockVinyl = Mockito.mock(Vinyl.class);
-        Assertions.assertFalse(VinylValidator.getVinylValidator().validate(mockVinyl));
+        Assertions.assertFalse(vinylValidator.validate(mockVinyl));
     }
 }

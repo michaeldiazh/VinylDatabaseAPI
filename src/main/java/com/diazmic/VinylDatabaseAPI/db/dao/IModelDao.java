@@ -1,5 +1,6 @@
 package com.diazmic.VinylDatabaseAPI.db.dao;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -11,7 +12,7 @@ public interface IModelDao<Model,Id>{
      * @param newModel the target model
      * @return the new {@code Model}
      */
-    Model create(Model newModel);
+    Model create(Model newModel) throws InvocationTargetException, IllegalAccessException;
 
     /**
      * Reads an id and return back a Model
@@ -26,7 +27,7 @@ public interface IModelDao<Model,Id>{
      * @param targetId the model that needs to be updated
      * @return {@code true} if Entity could be updated, {@code false} otherwise
      */
-    boolean update(Model newModel, Id targetId);
+    boolean update(Model newModel, Id targetId) throws InvocationTargetException, IllegalAccessException;
 
     /**
      * Deletes an Entity in the Database

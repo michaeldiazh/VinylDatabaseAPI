@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,7 +38,7 @@ public class VinylServiceTest {
     private Collection<Vinyl> vinylDatabase;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() throws InvocationTargetException, IllegalAccessException {
         MockitoAnnotations.openMocks(this);
         vinylDatabase = new ArrayList<>();
         setUpDaoCreate();
@@ -224,7 +225,7 @@ public class VinylServiceTest {
     }
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[(0.1),(setUp())]
 
-    private void setUpDaoCreate() {
+    private void setUpDaoCreate() throws InvocationTargetException, IllegalAccessException {
         //Create Method
         Mockito.when(mockVinylDao.create(Mockito.any(Vinyl.class)))
                 .thenAnswer(invocation -> {
@@ -246,7 +247,7 @@ public class VinylServiceTest {
 
     }
 
-    private void setUpDaoUpdate(){
+    private void setUpDaoUpdate() throws InvocationTargetException, IllegalAccessException {
         // Update Method
         Mockito.when(mockVinylDao.update(Mockito.any(Vinyl.class),Mockito.anyString()))
                 .thenAnswer(invocation -> {
