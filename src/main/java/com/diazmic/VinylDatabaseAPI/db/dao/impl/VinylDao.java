@@ -17,14 +17,16 @@ import java.util.Optional;
 /*
     TODO:
         + Create Unit Test and Build the methods for the Dao:
-            # create(Vinyl newModel)
+            # create(Vinyl newModel) [DONE October 22, 2021]
                 1) If I create a invalid model (fails Validator), throw exception: (Test 1.1)
-                2) If I create a model that existent in the database, return vinyl:
-                3) If I create a valid model, return the vinyl:
+                2) If I create a model that existent in the database, return vinyl: (Test 1.2)
+                3) If I create a valid model, return the vinyl: (Test 1.3)
             # read(String targetId)
                 1) If the targetId is null, throw exception:
-                2) If the targetId is valid, return the valid vinyl:
-                3) If the targetId is valid but not in database, throw exception:
+                2) If the targetId is blank, throw exception:
+                3) If the targetId is null, throw exception:
+                4) If the targetId is valid, return the valid vinyl:
+                5) If the targetId is valid but not in database, return an empty container:
             # update(Vinyl newModel, String targetModel)
                 1) If one can update a vinyl, return true:
                 2) If one can not update a vinyl, return false:
@@ -47,18 +49,30 @@ public class VinylDao implements IModelDao<Vinyl,String> {
 
     @Override
     public Vinyl create(Vinyl newModel) throws InvocationTargetException, IllegalAccessException {
-        if(vinylValidator.validate(newModel))
-            return null;
+        if(!vinylValidator.validate(newModel))
+            throw new IllegalAccessException("Cannot create vinyl. Model is not valid by Vinyl Validator....");
         return vinylRepository.findById(newModel.getCatalogNumber())
                 .orElseGet(() ->
                         vinylRepository.save(newModel));
     }
 
     @Override
-    public Optional<Vinyl> read(String targetId) {
+    public Optional<Vinyl> read(String targetId) throws Exception {
+        if(targetId == null){
+            throw new NullPointerException("Catalog Number is null. Please check logs");
+        }
+        else if(targetId.isEmpty()){
+            throw new Exception("Catalog Number is empty");
+        }
+
+        else if(targetId.isBlank()){
+            throw new Exception("Catalog Number is blank");
+        }
+
         Optional<Vinyl> targetVinylBucket = vinylRepository.findById(targetId);
         if(targetVinylBucket.isEmpty())
             return Optional.empty();
+
         return targetVinylBucket;
     }
 

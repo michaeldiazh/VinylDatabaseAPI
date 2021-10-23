@@ -84,7 +84,7 @@ public class VinylService {
      * @throws Exception if the vinyl doesn't exist in database.
      */
     public Vinyl getVinyl(String catalogNumber) throws Exception {
-        return vinylDao.read(catalogNumber).orElseThrow(Exception::new);
+        return vinylDao.read(catalogNumber).orElseThrow(() -> new Exception("Vinyl does not exist in Database"));
     }
 
     /**

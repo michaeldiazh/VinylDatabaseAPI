@@ -38,7 +38,7 @@ public class VinylServiceTest {
     private Collection<Vinyl> vinylDatabase;
 
     @BeforeEach
-    public void setUp() throws InvocationTargetException, IllegalAccessException {
+    public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         vinylDatabase = new ArrayList<>();
         setUpDaoCreate();
@@ -173,7 +173,7 @@ public class VinylServiceTest {
     }
 
     @Test
-    public void Test_5_2_editVinyl_InputWithInValidCatalogNumberAndVinyl_Throws_Exception() {
+    public void Test_5_2_editVinyl_InputWithInValidCatalogNumberAndVinyl_Throws_Exception() throws Exception {
         setUpDaoRead();
         vinylDatabase = List.of(mockVinyl1,mockVinyl2,mockVinyl3);
         String initCatalogNumber = "testFakeCatalogNumberNotInDB";
@@ -234,7 +234,7 @@ public class VinylServiceTest {
                 });
     }
 
-    private void setUpDaoRead(){
+    private void setUpDaoRead() throws Exception {
         // Retrieve Method
         Mockito.when(mockVinylDao.read(Mockito.anyString()))
                 .thenAnswer(invocation -> {

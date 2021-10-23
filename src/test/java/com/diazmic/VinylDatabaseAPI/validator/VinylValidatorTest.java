@@ -16,10 +16,11 @@ import java.util.ArrayList;
 
 @SpringBootTest
 public class VinylValidatorTest {
-    private final Vinyl testVinyl = VinylFactory.makeVinyl("test","test",new Artist(), Vinyl.Type.EP, Vinyl.Size.SEVEN_INCH, Vinyl.RPM.SEVENTY_EIGHT,new ArrayList<>(),VinylInventory.builder().build());
+    private final VinylFactory vinylFactory = VinylFactory.vinylFactory;
+    private final Vinyl testVinyl = vinylFactory.makeVinyl("test","test",new Artist(), Vinyl.Type.EP, Vinyl.Size.SEVEN_INCH, Vinyl.RPM.SEVENTY_EIGHT,new ArrayList<>(),VinylInventory.builder().build());
 
     @Autowired
-    private VinylValidator vinylValidator = new VinylValidator();
+    private final VinylValidator vinylValidator = new VinylValidator();
 
     @Test
     public void Test_1_1_validate_works() throws IllegalAccessException, InvocationTargetException {
@@ -29,5 +30,17 @@ public class VinylValidatorTest {
     public void Test_1_2_validate_works_for_catching_null() throws IllegalAccessException, InvocationTargetException {
         Vinyl mockVinyl = Mockito.mock(Vinyl.class);
         Assertions.assertFalse(vinylValidator.validate(mockVinyl));
+    }
+
+    @Test
+    public void Test_1_3_validates_works_for_blank_vinyl() throws InvocationTargetException, IllegalAccessException {
+        Vinyl blankVinyl = vinylFactory.makeBlankVinyl();
+        Assertions.assertTrue(vinylValidator.validate(blankVinyl));
+    }
+
+    @Test
+    public void Test_1_4_validates_works_for_test_vinyl() throws InvocationTargetException, IllegalAccessException {
+        Vinyl testVinyl = vinylFactory.makeTestVinyl();
+        Assertions.assertTrue(vinylValidator.validate(testVinyl));
     }
 }

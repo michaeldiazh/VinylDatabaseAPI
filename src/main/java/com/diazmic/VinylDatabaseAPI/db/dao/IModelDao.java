@@ -19,7 +19,7 @@ public interface IModelDao<Model,Id>{
      * @param targetId the Id of the model
      * @return {@code Optional<Model>}
      */
-    Optional<Model> read(Id targetId);
+    Optional<Model> read(Id targetId) throws Exception;
 
     /**
      * Updates an Entity in the Database
